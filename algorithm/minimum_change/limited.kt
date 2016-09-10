@@ -7,34 +7,37 @@ fun main(args: Array<String>){
   val have = listOf( INF, 0, 1, 0, 3, 0, 1, 0, 1 )
 
 
+  val result = calculate_pay_amount(price, have)
+  println(result)
+  val pay_sum = currencies.zip(result).map{ it.first * it.second }.sum()
+  println("price: $price")
+  println("you have: $have")
+  println("you should pay: ${pay_sum}(${result.sum()}) ${result}")
+  println("change is: ${pay_sum - price}(${split(pay_sum - price).sum()}) ${split(pay_sum - price)}")
+}
+
+fun calculate_pay_amount(price: Int, available_currencies: List<Int>): List<Int>{
   var flag = false // true when currently focusing money shouldn't be used.
   val normalized_price = split(price)
-  val r = have.reversed().zip(normalized_price.reversed()).map{
+
+  // 小さい方から検討する
+  return available_currencies.reversed().zip(normalized_price.reversed()).map{
     if( !flag && it.first >= it.second ){
       flag = false
       it.second
     }
     else if( flag && it.first >= it.second + 1 ){
-      // do move up
+      // 下位小銭がないので多めに払う
       flag = false
       it.second + 1
     }
     else{
-      // skip to next larger money
+      // 払えないのでスキップ
       flag = true
       0
     }
-  }
-
-
-  val pay_sum = currencies.zip(r.reversed()).map{ it.first * it.second }.sum()
-
-  println("price: $price")
-  println("you have: $have")
-  println("you should pay: ${pay_sum}(${r.reversed().sum()}) ${r.reversed()}")
-  println("change is: ${pay_sum - price}(${split(pay_sum - price).sum()}) ${split(pay_sum - price)}")
+  }.reversed() // 大きい順に戻す
 }
-
 
 
 fun split(price: Int): List<Int>{
