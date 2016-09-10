@@ -13,12 +13,12 @@ fun main(args: Array<String>){
   println("price: $price")
   println("you have: $have")
   println("you should pay: ${pay_sum}(${result.sum()}) ${result}")
-  println("change is: ${pay_sum - price}(${split(pay_sum - price).sum()}) ${split(pay_sum - price)}")
+  println("change is: ${pay_sum - price}(${normalize(pay_sum - price).sum()}) ${normalize(pay_sum - price)}")
 }
 
 fun calculate_pay_amount(price: Int, available_currencies: List<Int>): List<Int>{
   var flag = false // true when currently focusing money shouldn't be used.
-  val normalized_price = split(price)
+  val normalized_price = normalize(price)
 
   // 小さい方から検討する
   return available_currencies.reversed().zip(normalized_price.reversed()).map{
@@ -40,7 +40,7 @@ fun calculate_pay_amount(price: Int, available_currencies: List<Int>): List<Int>
 }
 
 
-fun split(price: Int): List<Int>{
+fun normalize(price: Int): List<Int>{
   var _price = price
   val result = currencies.map{
     val t = _price / it
