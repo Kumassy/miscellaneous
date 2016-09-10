@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Three.js - Equipotential Surface</title>
+
+  <script src="js/three.min.js"></script>
+  <script src="js/OrbitControls.js"></script>
+  <style>
+  html,body{
+    margin: 0;
+    padding: 0;
+  }
+  </style>
+</head>
+<body>
+  <script>
+  (function() {
+    'use strict';
+
+  var scene, camera, renderer;
+  var geometry, material, mesh;
+  var equipotential_surface;
+  var light;
+  var controls;
+
+  var idou;
+  var SLICE_BY = 100;
+
+  init();
+  animate();
+
+  function init() {
+
+    scene = new THREE.Scene();
+
+    camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 1, 10000 );
+    camera.position.z = 10;
+    camera.position.x = 50;
+    camera.position.y = 50;
+    camera.lookAt(scene.position);
+
+
+    //Example: Basic box
+    // geometry = new THREE.BoxGeometry( 200, 200, 200 );
+    // // material = new THREE.MeshBasicMaterial( { color: 0xff0000, wireframe: true } );
+    // material = new THREE.MeshLambertMaterial( { color: 0xff0000, wireframe: false });
+    //
+    // mesh = new THREE.Mesh( geometry, material );
+    // scene.add( mesh );
+
+    // equipotential_surface = new THREE.Mesh(
+    //   new THREE.MeshLambertMaterial( { color: 0xa0a0a0, wireframe: false }),
+    //   new THREE.ParametricGeometry ( generator, 18, 18 , true )
+    // );
+    // // equipotential_surface.position.set(0, 0, 0);
+    // scene.add( equipotential_surface );
+
+    geometry = new THREE.ParametricGeometry ( my_generator, SLICE_BY , SLICE_BY ,false);
+    material = new THREE.MeshLambertMaterial( { color: 0xff0000, wireframe: true });
+    mesh = new THREE.Mesh( geometry, material );
+    scene.add( mesh );
+
+    light = new THREE.DirectionalLight(0xffffff, 1);
+    light.position.set(10, -20, 30);
+    scene.add(light);
+
+    controls = new THREE.OrbitControls(camera);
+
+    renderer = new THREE.WebGLRenderer();
+    renderer.setClearColor(0xefefef);
+    renderer.setSize( window.innerWidth, window.innerHeight );
+
+    document.body.appendChild( renderer.domElement );
+
+    idou = 0;
+  }
+
+  function animate() {
+    requestAnimationFrame( animate );
+
+    // mesh.rotation.x += 0.01;
+    // mesh.rotation.y += 0.02;
+    idou += 0.01;
+    mesh.geometry = new THREE.ParametricGeometry ( my_generator, SLICE_BY, SLICE_BY ,false);
+
+    controls.update();
+
+    renderer.render( scene, camera );
+  }
+
+
+    function my_generator(u,v) {
+      // var uu = u*Math.PI*2;
+      // var vv = v*Math.PI/2;
+      var uu = u*100;
+      var vv = v*100;
+
+      // var x = Math.sin(uu)*Math.cos(uu)*Math.sin(vv)*Math.sin(vv);
+      // var y = Math.sin(uu)*Math.sin(vv)*Math.cos(vv);
+      // var z = Math.cos(uu)*Math.sin(vv)*Math.cos(vv);
+
+      var x = uu - 50 ;
+      var z = vv - 50 ;
+      var y = 0 - planet_1(x + Math.sin(idou)*20,z + Math.cos(idou)*20) - planet_2(x,z) - planet_3(x + Math.sin(idou*4)*10,z+ Math.cos(idou*4)*10) - planet_4(x,z);
+
+      return new THREE.Vector3(x,y,z);
+    }
+
+    function planet_1(x,z){
+      return 1000/(x*x + z*z);
+    }
+    function planet_2(x,z){
+      return 10000/((x-30)*(x-30)+(z-20)*(z-20));
+    }
+    function planet_3(x,z){
+      return 2000/((x+20)*(x+20)+(z-10)*(z-10));
+    }
+    function planet_4(x,z){
+      return 800/((x-10)*(x-10)+(z+20)*(z+20));
+    }
+
+
+
+  })();
+
+  </script>
+</body>
+</html>
