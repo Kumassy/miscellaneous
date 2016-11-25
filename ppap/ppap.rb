@@ -26,7 +26,7 @@ puts apple_pen + pineapple_pen
 =end
 
 class PPAP
-  attr_writer :ppap_space
+  attr_accessor :ppap_space
   def initialize
     @ppap_space = []
     @ppaps = {}
@@ -50,14 +50,21 @@ class PPAP
 
     method_name = @ppap_space.reverse.join('_').downcase
     @ppaps[method_name] = create @ppap_space.dup
-    @ppap_space = []
 
     define_singleton_method method_name do |*args|
-      @ppaps[method_name]
+      if args.length > 0
+        p self.method_name
+        p args[0].ppap_space
+        # p self.ppap_space.concat args[0].ppap_space.reverse 
+        create self.ppap_space.concat args[0].ppap_space.reverse
+      else
+        @ppaps[method_name]
+      end
     end
 
-    p @ppaps
-    p self.methods false
+    @ppap_space = []
+    # p @ppaps
+    # p self.methods false
   end
 
   def to_s
@@ -78,6 +85,6 @@ ppap.I_have_a "Pen"
 ppap.I_have_a "Pineapple"
 ppap.uh! "Pineapple Pen"
 
-puts ppap.apple_pen ppap.pineapple_pen
-puts ppap.apple_pen
-puts ppap.pineapple_pen
+puts ppap.apple_pen(ppap.pineapple_pen)
+# puts ppap.apple_pen
+# puts ppap.pineapple_pen
