@@ -1,5 +1,5 @@
 # 素朴な実装
-
+=begin
 class PPAP
   attr_reader :list
   def initialize list
@@ -23,15 +23,22 @@ pineapple_pen = PPAP.new(['Pen', 'Pineapple'])
 puts apple_pen
 puts pineapple_pen
 puts apple_pen + pineapple_pen
+=end
 
-__END__
 class PPAP
+  attr_writer :ppap_space
   def initialize
     @ppap_space = []
     @ppaps = {}
   end
+  def create list
+    t = self.class.new
+    t.ppap_space = list
+    t
+  end
   def I_have_a ingredient
     @ppap_space << ingredient
+    puts "I have a #{ingredient}"
   end
 
   def uh! synthesis
@@ -39,7 +46,26 @@ class PPAP
       raise 'Invalid PPAP'
     end
 
-    @ppaps[synthesis.to_sym] = @ppap_space.dup
+    puts "uh! #{synthesis}"
+
+    method_name = @ppap_space.reverse.join('_').downcase
+    @ppaps[method_name] = create @ppap_space.dup
+    @ppap_space = []
+
+    define_singleton_method method_name do |*args|
+      @ppaps[method_name]
+    end
+
+    p @ppaps
+    p self.methods false
+  end
+
+  def to_s
+    if @ppap_space.length > 0
+      @ppap_space.reverse.join(' ')
+    elsif @ppaps.length > 0
+      @ppaps.join(' ')
+    end
   end
 end
 
@@ -52,4 +78,6 @@ ppap.I_have_a "Pen"
 ppap.I_have_a "Pineapple"
 ppap.uh! "Pineapple Pen"
 
-ppap.
+puts ppap.apple_pen ppap.pineapple_pen
+puts ppap.apple_pen
+puts ppap.pineapple_pen
